@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1b1713">
+<meta name="description" content="Neutrón: el clásico juego de mesa, 1 jugador contra la IA o 2 jugadores en el mismo dispositivo">
+<title>Neutrón</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Neutrón">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- ===================== PANTALLA: MENÚ / CONFIGURACIÓN ===================== -->
+  <section id="screen-menu" class="screen">
+    <header class="topbar">
+      <h1>Neutrón</h1>
+      <button id="btn-rules" class="icon-btn" aria-label="Reglas" title="Reglas">
+        <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 15h-2v-2h2zm0-3.6v.6h-2v-1.5c0-.5.3-.9.8-1.2l1-.6c.4-.3.7-.6.7-1.1 0-.7-.6-1.2-1.5-1.2s-1.6.5-1.7 1.3l-1.9-.2C8.8 8 10 7 11.9 7c2.1 0 3.6 1.1 3.6 2.9 0 1.1-.6 1.8-1.5 2.4l-.8.5c-.3.2-.4.4-.4.8z"/></svg>
+      </button>
+    </header>
+
+    <button id="btn-continue" class="btn btn-accent hidden" style="width:100%;">Continuar partida</button>
+
+    <section class="setting-group">
+      <h3>Modo de juego</h3>
+      <div class="segmented" id="mode-group">
+        <button data-value="pvc" class="segment">1 jugador (vs IA)</button>
+        <button data-value="pvp" class="segment">2 jugadores</button>
+      </div>
+    </section>
+
+    <section class="setting-group">
+      <h3>Quién empieza</h3>
+      <div class="segmented" id="starter-group">
+        <button data-value="1" class="segment">Jugador 1</button>
+        <button data-value="2" class="segment">Jugador 2</button>
+        <button data-value="random" class="segment">Al azar</button>
+      </div>
+    </section>
+
+    <section class="setting-group">
+      <h3 id="label-p1">Color del jugador 1</h3>
+      <div class="swatch-group" id="p1-color-group" data-player="1"></div>
+    </section>
+
+    <section class="setting-group">
+      <h3 id="label-p2">Color del jugador 2</h3>
+      <div class="swatch-group" id="p2-color-group" data-player="2"></div>
+    </section>
+
+    <section class="setting-group" id="difficulty-section">
+      <h3>Dificultad de la IA</h3>
+      <div class="segmented" id="difficulty-group">
+        <button data-value="easy" class="segment">Fácil</button>
+        <button data-value="medium" class="segment">Medio</button>
+        <button data-value="hard" class="segment">Difícil</button>
+      </div>
+    </section>
+
+    <section class="setting-group">
+      <h3>Color del tablero</h3>
+      <div class="swatch-group" id="board-color-group"></div>
+    </section>
+
+    <section class="setting-group">
+      <h3>Resaltar movimientos posibles</h3>
+      <label class="switch">
+        <input type="checkbox" id="toggle-highlight">
+        <span class="switch-track"><span class="switch-thumb"></span></span>
+      </label>
+    </section>
+
+    <section class="setting-group">
+      <h3>Sonidos</h3>
+      <label class="switch">
+        <input type="checkbox" id="toggle-sound">
+        <span class="switch-track"><span class="switch-thumb"></span></span>
+      </label>
+    </section>
+
+    <button id="btn-play" class="btn" style="width:100%;">Jugar</button>
+  </section>
+
+  <!-- ===================== PANTALLA: PARTIDA ===================== -->
+  <section id="screen-game" class="screen hidden">
+    <header class="topbar">
+      <button id="btn-menu" class="icon-btn" aria-label="Volver al menú" title="Volver al menú">
+        <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M20 11H7.8l5.6-5.6L12 4l-8 8 8 8 1.4-1.4L7.8 13H20z"/></svg>
+      </button>
+      <h1>Neutrón</h1>
+      <button id="btn-rules-game" class="icon-btn" aria-label="Reglas" title="Reglas">
+        <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 15h-2v-2h2zm0-3.6v.6h-2v-1.5c0-.5.3-.9.8-1.2l1-.6c.4-.3.7-.6.7-1.1 0-.7-.6-1.2-1.5-1.2s-1.6.5-1.7 1.3l-1.9-.2C8.8 8 10 7 11.9 7c2.1 0 3.6 1.1 3.6 2.9 0 1.1-.6 1.8-1.5 2.4l-.8.5c-.3.2-.4.4-.4.8z"/></svg>
+      </button>
+    </header>
+
+    <div class="status-bar" id="status-bar">Turno de Jugador 1</div>
+    <div class="status-sub" id="status-sub">Mové el neutrón</div>
+
+    <div class="board-wrap">
+      <div id="board" class="board" role="grid" aria-label="Tablero de Neutrón"></div>
+    </div>
+
+    <div class="controls">
+      <button id="btn-undo" class="btn btn-secondary">Deshacer</button>
+      <button id="btn-new" class="btn btn-secondary">Nueva partida</button>
+    </div>
+  </section>
+
+  <!-- ===================== MODAL: REGLAS ===================== -->
+  <div id="modal-rules" class="overlay hidden">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2>Cómo se juega</h2>
+        <button id="btn-close-rules" class="icon-btn" aria-label="Cerrar">✕</button>
+      </div>
+      <div class="modal-content">
+        <p><strong>El objetivo:</strong> hay un neutrón (la pieza cuadrada) en el centro. Ganás si lográs que el neutrón llegue a <strong>tu propia fila</strong> (la fila donde empezaron tus fichas), sin importar quién lo haya movido ahí.</p>
+        <p><strong>Cómo se mueven las piezas:</strong> todas las piezas (fichas y neutrón) se mueven como la dama del ajedrez: en línea recta, y <strong>deslizándose hasta chocar</strong> contra el borde del tablero u otra pieza. No se pueden frenar a mitad de camino ni saltar sobre otras piezas.</p>
+        <svg class="rules-diagram" viewBox="0 0 260 56" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ejemplo: una ficha se desliza desde la primera celda hasta detenerse justo antes de otra pieza">
+          <g fill="none" stroke="#6b5f4f" stroke-width="1.5">
+            <rect x="1" y="1" width="50" height="50"/>
+            <rect x="53" y="1" width="50" height="50"/>
+            <rect x="105" y="1" width="50" height="50"/>
+            <rect x="157" y="1" width="50" height="50"/>
+            <rect x="209" y="1" width="50" height="50"/>
+          </g>
+          <rect x="107" y="3" width="46" height="46" fill="#c99a4b" opacity="0.25"/>
+          <circle cx="26" cy="26" r="16" fill="#f4f1ea" stroke="#262626" stroke-width="2"/>
+          <circle cx="234" cy="26" r="16" fill="#c0392b" stroke="#262626" stroke-width="2"/>
+          <path d="M46 26 H120" stroke="#c99a4b" stroke-width="3" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+          <defs>
+            <marker id="arrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="#c99a4b"/>
+            </marker>
+          </defs>
+        </svg>
+        <p class="diagram-caption">La ficha blanca se desliza y se frena justo antes de chocar con la ficha roja: esa es su única parada posible en esa dirección.</p>
+        <p><strong>Tu turno:</strong> primero movés el neutrón (hacia donde quieras, incluso hacia tu propia fila o la del rival), y después movés una de tus fichas. La única excepción es la primera jugada de toda la partida: el que empieza solo mueve una ficha, sin tocar el neutrón.</p>
+        <p><strong>Otras formas de ganar o perder:</strong></p>
+        <ul>
+          <li>Si llevás tus <strong>5 fichas a la fila de salida del rival</strong>, ganás.</li>
+          <li>Si al empezar tu turno el neutrón <strong>no puede moverse hacia ningún lado</strong> (está totalmente rodeado), perdés.</li>
+          <li>Si después de mover el neutrón ninguna de tus fichas puede moverse, también perdés ese turno.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL: FIN DE PARTIDA ===================== -->
+  <div id="modal-end" class="overlay hidden">
+    <div class="modal-box modal-end-box">
+      <p id="end-title" class="end-title">¡Ganó Jugador 1!</p>
+      <p id="end-reason" class="end-reason">El neutrón llegó a tu fila de salida.</p>
+      <div class="end-actions">
+        <button id="btn-end-new" class="btn">Nueva partida</button>
+        <button id="btn-end-menu" class="btn btn-secondary">Volver al menú</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
